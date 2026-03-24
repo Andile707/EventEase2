@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace Eventease
 {
     public class Program
@@ -8,6 +10,15 @@ namespace Eventease
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            // Add the database context to the services container
+           /* builder.Services.AddDbContext<Eventease.Data.BookingDbContext>(options => 
+            * options.useSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            */
+           builder.Services.AddDbContext<Eventease.Data.BookingDbContext>(options =>
+               options.UseInMemoryDatabase("BookingDb"));
+
+
+
 
             var app = builder.Build();
 

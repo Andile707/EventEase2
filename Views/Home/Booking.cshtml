@@ -9,13 +9,15 @@
 <p>Use the page to make bookings.</p>
 <a class="btn btn-primary">Make a Booking</a> 
 <form asp-action="BookingForm" asp-controller="Home">
-    <lable>BookingId</label>
-    <input class="form-control" type="number" placeholder="0" asp-for="BookingId" />
-    <lable class="mt-4">BookingName</label>
+    <label>BookingId</label>
+    <input hidden class="form-control" type="number" placeholder="0" asp-for="BookingId" />
+    <label class="mt-4">BookingName</label>
     <input class="form-control" type="text" placeholder="BookingName" asp-for="BookingName" />
     <label class="mt-4">VenueId</label>
     <input class="form-control" type="text" placeholder="VenueID" asp-for="VenueId" />
     <label class="mt-4">EventId</label>
     <input class="form-control" type="number" placeholder="EventID" asp-for="EventId" />
+    <label class"mt-4">BookingDate</label>
+    <input class="form-control" type="date" placehoder="Date" asp-for="BookingDate" />
     <button class="btn btn-primary mt-4" type="submit">Submit</button>
 </form>
