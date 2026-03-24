@@ -33,6 +33,11 @@ namespace Eventease.Controllers
             return View();
         }
 
+        public IActionResult BookingForm(BookingManager model)
+        {
+            return RedirectToAction("Booking");
+        }
+
         public IActionResult Event()
         {
             return View();

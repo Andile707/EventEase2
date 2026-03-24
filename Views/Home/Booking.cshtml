@@ -1,15 +1,21 @@
 ﻿@{
     ViewData["Title"] = "Booking";
 }
+
+@model Eventease.Models.BookingManager
+
 <h1>@ViewData["Title"]</h1>
 
 <p>Use the page to make bookings.</p>
 <a class="btn btn-primary">Make a Booking</a> 
-<form>
+<form asp-action="BookingForm" asp-controller="Home">
     <lable>BookingId</label>
-    <input class="form-control" type="number" placeholder="0" asp-for="Id"
-    <lable>BookingName</label>
-    <label>VenueId</label>
-    <label>EventId</label>
-
+    <input class="form-control" type="number" placeholder="0" asp-for="BookingId" />
+    <lable class="mt-4">BookingName</label>
+    <input class="form-control" type="text" placeholder="BookingName" asp-for="BookingName" />
+    <label class="mt-4">VenueId</label>
+    <input class="form-control" type="text" placeholder="VenueID" asp-for="VenueId" />
+    <label class="mt-4">EventId</label>
+    <input class="form-control" type="number" placeholder="EventID" asp-for="EventId" />
+    <button class="btn btn-primary mt-4" type="submit">Submit</button>
 </form>
