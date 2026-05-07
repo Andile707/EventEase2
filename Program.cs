@@ -1,4 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Eventease.Data;
+using Eventease.Services;
+using Azure.Storage.Blobs;
 
 namespace Eventease
 {
@@ -14,11 +17,13 @@ namespace Eventease
            /* builder.Services.AddDbContext<Eventease.Data.BookingDbContext>(options => 
             * options.useSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             */
-           builder.Services.AddDbContext<Eventease.Data.BookingDbContext>(options =>
-               options.UseInMemoryDatabase("BookingDb"));
+           builder.Services.AddDbContext<EventEaseDbContext>(options =>
+               options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            var blobStorageConnectionString = builder.Configuration.GetConnectionString("AzureBlobStorage");
+            var blobContainerName = builder.Configuration["AzureBlobContainerName"];
 
-
+            builder.Services.AddSingleton<IAzureService>(new AzureService(blobStorageConnectionString, blobContainerName));
 
             var app = builder.Build();
 

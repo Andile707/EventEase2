@@ -2,7 +2,7 @@
     ViewData["Title"] = "Display Bookings";
 }
 
-@model List<BookingManager>
+@model List<Booking>
 
     <div class="text-center">
         <h1 class="dispay-4">Bookings</h1>
@@ -20,7 +20,8 @@
                 
             </thead>
             <tbody>
-                @{
+            @{
+                if (Model != null)
                     foreach (var booking in Model)
                     {
                         <tr>
@@ -28,10 +29,11 @@
                             <td>@booking.BookingName</td>
                             <td>@booking.VenueId</td>
                             <td>@booking.EventId</td>
-                            <td>@booking.BookingDate.ToShortDateString()</td>
+                            <td>@booking.BookingDate</td>
                             <td>
                               <a asp-action="Booking" asp-route-itemid="@booking.BookingId">Edit</a>
                               <a asp-action="DeleteBooking" asp-route-itemid="@booking.BookingId">Delete</a>
+                              <a asp-action="BookingForm" asp-route-itemid="@booking.BookingId">Add</a>
                             </td>
                         </tr>
                     }
