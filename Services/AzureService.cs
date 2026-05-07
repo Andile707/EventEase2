@@ -2,5 +2,8 @@
 {
     public class AzureService : IAzureService
     {
+        public AzureService() 
+        {
+        }
     }
 }
