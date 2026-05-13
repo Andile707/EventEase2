@@ -6,30 +6,36 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Eventease.Models
 {
-    public class Booking
+    
+    public class BookingModel
     {
-        
+
         // This class represents a booking in the system. It contains properties for the booking ID, name, venue ID, event ID, and booking date.
         [Key]
-        public int BookingId { get; set; }
+        
+        public int BookingId { get; set; } 
 
         [Required(ErrorMessage = "Booking name is required")]
+         public string BookingName { get; set; } = string.Empty;
 
-        public string BookingName { get; set; } = "";
 
-        
         [Required]
         public int VenueId { get; set; } 
 
-        
+
         [Required]
         public int EventId { get; set; } 
 
 
         [Required]
-        public DateOnly BookingDate { get; set; } 
+        public DateOnly BookingDate { get; set; }
 
-        
-        
+        // Navigation Properties
+        public EventModel Event { get; set; } = null!;
+
+        public VenueModel Venue { get; set; } = null!;
+
+
+
     }
 }

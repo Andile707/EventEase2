@@ -2,21 +2,12 @@
     ViewData["Title"] = "Display Bookings";
 }
 
-@model List<Booking>
+@model List<BookingModel>
 
     <div class="text-center">
         <h1 class="dispay-4">Bookings</h1>
         <br/>
-        <div class="row">
-            <div class="col-md-6"></div>
-            <form class="d-flex" asp-action="Index" asp-asp-controller="Home">
-                <input name="searchString" class="form-control me-1" type="search" placeholder="Search" aria-label="Search" />
-                <button class="btn btn-dark" type="submit">Search by name</button>
-            </form>
-            <div class="col-md-t">
-                <a asp-action="Index" class="text-dark">Back to Full list</a>
-            </div>
-        </div>
+       
         <table class="table">
             <thead>
             <tr>
@@ -41,9 +32,9 @@
                             <td>@booking.EventId</td>
                             <td>@booking.BookingDate</td>
                             <td>
-                              <a asp-action="Booking" asp-route-itemid="@booking.BookingId">Edit</a>
-                              <a asp-action="DeleteBooking" asp-route-itemid="@booking.BookingId">Delete</a>
-                              <a asp-action="BookingForm" asp-route-itemid="@booking.BookingId">Add</a>
+                              <a asp-controller="Home" asp-action="EditBooking" asp-route-BookingId="@booking.BookingId">Edit</a>
+                              <a asp-controller="Home" asp-action="DeleteBooking" asp-route-BookingId="@booking.BookingId">Delete</a>
+                              <a asp-action="Bookingview" asp-route-itemid="@booking.BookingId">Add</a>
                             </td>
                         </tr>
                     }

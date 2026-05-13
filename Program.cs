@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Eventease.Data;
 using Eventease.Services;
 using Azure.Storage.Blobs;
+using Azure.Identity;
+using Eventease.Models;
 
 namespace Eventease
 {
@@ -13,18 +15,19 @@ namespace Eventease
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+           
+            
             // Add the database context to the services container
-           /* builder.Services.AddDbContext<Eventease.Data.BookingDbContext>(options => 
-            * options.useSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-            */
+            
            builder.Services.AddDbContext<EventEaseDbContext>(options =>
                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var blobStorageConnectionString = builder.Configuration.GetConnectionString("AzureBlobStorage");
             var blobContainerName = builder.Configuration["AzureBlobContainerName"];
 
-            builder.Services.AddSingleton<IAzureService>(new AzureService(blobStorageConnectionString, blobContainerName));
-
+            builder.Services.Configure<AzureOptions>(builder.Configuration.GetSection("Azure"));
+            //builder.Services.AddSingleton<IAzureService>(new AzureService(blobStorageConnectionString, blobContainerName));
+            builder.Services.AddScoped<IAzureService,AzureBlobService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -33,6 +36,7 @@ namespace Eventease
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+                
             }
 
             app.UseHttpsRedirection();
@@ -45,6 +49,7 @@ namespace Eventease
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
             app.Run();
         }

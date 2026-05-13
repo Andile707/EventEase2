@@ -1,9 +1,11 @@
 ﻿namespace Eventease.Services
 {
-    public class AzureService : IAzureService
+    public class AzureService 
     {
         public AzureService() 
         {
+
+
         }
     }
 }
