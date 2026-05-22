@@ -17,7 +17,7 @@ namespace Eventease.Controllers
         {
             return View();
         }
-
+       /*
         public async Task<IActionResult> DisplayBookingsView()
         {
             var bookings = await _context.Bookings
@@ -33,7 +33,7 @@ namespace Eventease.Controllers
                 .ToListAsync();
 
             return View(bookings);
-        }
+        }*/
 
         public async Task<IActionResult> DisplayByString(string searchTerm)
         {
@@ -60,10 +60,11 @@ namespace Eventease.Controllers
                 .ToListAsync();
 
             return View(bookings);
+           //return View("DisplayBookingsView");
         }
 
         public async Task<IActionResult>
-DisplayByDate(string searchTerm, DateOnly? bookingDate)
+DisplayBookingsView(string searchTerm, DateOnly? bookingDate)
         {
             var query = _context.Bookings
                 .Include(b => b.Event)

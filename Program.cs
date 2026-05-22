@@ -1,9 +1,10 @@
-using Microsoft.EntityFrameworkCore;
-using Eventease.Data;
-using Eventease.Services;
-using Azure.Storage.Blobs;
 using Azure.Identity;
+using Azure.Storage.Blobs;
+using Eventease.Data;
 using Eventease.Models;
+using Eventease.Services;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace Eventease
 {
@@ -11,16 +12,43 @@ namespace Eventease
     {
         public static void Main(string[] args)
         {
+
             var builder = WebApplication.CreateBuilder(args);
+
+
+
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            
+             // Add the database context to the services container
+
+            builder.Services.AddDbContext<EventEaseDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            
+            /*
+            // Configure DbContext with Managed Identity
+            builder.Services.AddDbContext<EventEaseDbContext>(options =>
+            {
+                var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+                var connection = new SqlConnection(connectionString);
+
+                // Acquire token for Azure SQL
+                var credential = new DefaultAzureCredential();
+                var token = credential.GetToken(
+                    new Azure.Core.TokenRequestContext(new[] { "https://database.windows.net/" })
+                );
+
+                connection.AccessToken = token.Token;
+
+                options.UseSqlServer(connection);
+            }); */
+
+
            
-            
-            // Add the database context to the services container
-            
-           builder.Services.AddDbContext<EventEaseDbContext>(options =>
-               options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
             var blobStorageConnectionString = builder.Configuration.GetConnectionString("AzureBlobStorage");
             var blobContainerName = builder.Configuration["AzureBlobContainerName"];

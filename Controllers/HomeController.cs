@@ -2,7 +2,7 @@ using Eventease.Data;
 using Eventease.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
+using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
@@ -99,7 +99,7 @@ namespace Eventease.Controllers
 
         }
 
-        [HttpPost]
+        
         public IActionResult CreateBooking(BookingModel model)
         {
             
