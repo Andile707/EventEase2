@@ -27,24 +27,8 @@ namespace Eventease
             builder.Services.AddDbContext<EventEaseDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             
-            /*
-            // Configure DbContext with Managed Identity
-            builder.Services.AddDbContext<EventEaseDbContext>(options =>
-            {
-                var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-                var connection = new SqlConnection(connectionString);
-
-                // Acquire token for Azure SQL
-                var credential = new DefaultAzureCredential();
-                var token = credential.GetToken(
-                    new Azure.Core.TokenRequestContext(new[] { "https://database.windows.net/" })
-                );
-
-                connection.AccessToken = token.Token;
-
-                options.UseSqlServer(connection);
-            }); */
+            
+            
 
 
            
