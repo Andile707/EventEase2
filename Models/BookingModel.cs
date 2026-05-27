@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 
 
@@ -30,12 +31,16 @@ namespace Eventease.Models
         [Required]
         public DateOnly BookingDate { get; set; }
 
-        // Navigation Properties
-        public EventModel Event { get; set; } = null!;
+       
+     // Navigation Properties
 
-        public VenueModel Venue { get; set; } = null!;
+    [ValidateNever]
+    public EventModel Event { get; set; } = null!;
+
+    [ValidateNever]
+    public VenueModel Venue { get; set; } = null!;
 
 
 
-    }
+}
 }

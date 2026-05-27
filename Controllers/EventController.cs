@@ -9,121 +9,136 @@ namespace Eventease.Controllers
 {
     public class EventController : Controller
     {
-        private readonly ILogger<EventController> _logger;
         private readonly EventEaseDbContext _context;
 
-
-        public EventController(ILogger<EventController> logger, EventEaseDbContext context)
+        public EventController(EventEaseDbContext context)
         {
-            _logger = logger;
             _context = context;
         }
 
-        public IActionResult EventPage()
+        // GET: Event
+        public async Task<IActionResult> Index()
         {
-            return View("EventPage");
+            return View(await _context.Events.ToListAsync());
         }
 
-        public IActionResult EventForm()
+        // GET: Event/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
-            return View("CreateEvent");
+            if (id == null)
+                return NotFound();
+
+            var eventModel = await _context.Events
+                .Include(e => e.Bookings)
+                .FirstOrDefaultAsync(e => e.EventId == id);
+
+            if (eventModel == null)
+                return NotFound();
+
+            return View(eventModel);
         }
 
-
-
-
-
-        [HttpPost]
-
-        public IActionResult Index(UploadModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                // Process the uploaded file here
-                // For example, you can save the file to the server or perform any necessary operations
-                // After processing, you can redirect to a success page or return a view with a success message
-                return RedirectToAction("Index");
-            }
-            // If the model state is not valid, return the view with validation errors
-            return View(model);
-        }
-
-
-        public IActionResult Privacy()
+        // GET: Event/Create
+        public IActionResult Create()
         {
             return View();
         }
 
-        
-
-        public IActionResult Eventview()
-            { 
-               return View("CreateEvent");
-        }
-
-       
-        public IActionResult DisplayEvents()
-        {
-            var AllEvents = _context.Events.ToList();
-            return View(AllEvents);
-        }
-
-        public IActionResult Booking(int? BookingId)
-        {
-            if(BookingId != null) 
-            {
-                //find the booking in the database using the booking id
-                var bookingInDb = _context.Bookings.SingleOrDefault(b => b.BookingId == BookingId);
-                //pass the booking to the view
-                return View(bookingInDb);
-            }
-            return View();
-        }
-
-       
-
-        public IActionResult DeleteBooking(int BookingId)
-        {
-                //find the booking in the database using the booking id
-                var bookingInDb = _context.Bookings.SingleOrDefault(b => b.BookingId == BookingId);
-            //remove the booking from the database
-            if (bookingInDb != null)
-            {
-                _context.Bookings.Remove(bookingInDb);
-                //save changes to the database
-                _context.SaveChanges();
-            }
-            return RedirectToAction("Booking");
-
-        }
-
+        // POST: Event/Create
         [HttpPost]
-
-        public IActionResult CreateEvent(EventModel model)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(
+            [Bind("EventId,VenueId,EventName,EventDescription,EventDate")] EventModel eventModel)
         {
-            
+            if (ModelState.IsValid)
+            {
+                _context.Events.Add(eventModel);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(eventModel);
+        }
+
+        // GET: Event/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var eventModel = await _context.Events.FindAsync(id);
+
+            if (eventModel == null)
+                return NotFound();
+
+            return View(eventModel);
+        }
+
+        // POST: Event/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind("EventId,VenueId,EventName,EventDescription,EventDate")] EventModel eventModel)
+        {
+            if (id != eventModel.EventId)
+                return NotFound();
 
             if (ModelState.IsValid)
+            {
+                try
                 {
-                    _context.Events.Add(model);
-
-                    _context.SaveChanges();
-                    //return RedirectToAction(nameof(Index));
-                    return View(model);
+                    _context.Events.Update(eventModel);
+                    await _context.SaveChangesAsync();
                 }
-            
-                
-                //return RedirectToAction("Success");
-                return RedirectToAction("Eventview");
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!EventExists(eventModel.EventId))
+                        return NotFound();
 
+                    throw;
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(eventModel);
         }
 
-
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        // GET: Event/Delete/5
+        public async Task<IActionResult> Delete(int? id)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            if (id == null)
+                return NotFound();
+
+            var eventModel = await _context.Events
+                .FirstOrDefaultAsync(e => e.EventId == id);
+
+            if (eventModel == null)
+                return NotFound();
+
+            return View(eventModel);
+        }
+
+        // POST: Event/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var eventModel = await _context.Events.FindAsync(id);
+
+            if (eventModel != null)
+            {
+                _context.Events.Remove(eventModel);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool EventExists(int id)
+        {
+            return _context.Events.Any(e => e.EventId == id);
         }
     }
 }

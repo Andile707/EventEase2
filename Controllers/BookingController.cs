@@ -155,8 +155,8 @@ namespace Eventease.Controllers
         {
             ViewData["VenueId"] = new SelectList(
                 _context.Venues,
-                "VenueId",
-                "VenueName",
+                "venueId",
+                "venueName",
                 selectedVenueId
             );
 

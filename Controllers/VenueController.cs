@@ -8,90 +8,136 @@ namespace Eventease.Controllers
     public class VenueController : Controller
     {
         private readonly EventEaseDbContext _context;
-        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public VenueController(
-            EventEaseDbContext context,
-            IWebHostEnvironment webHostEnvironment)
+        public VenueController(EventEaseDbContext context)
         {
             _context = context;
-            _webHostEnvironment = webHostEnvironment;
         }
 
-        [HttpGet]
-        public IActionResult Venueview()
+        // GET: Venue
+        public async Task<IActionResult> Index()
         {
-            return View("CreateVenue");
+            return View(await _context.Venues.ToListAsync());
         }
 
-        public IActionResult DisplayVenues()
+        // GET: Venue/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
-            var AllVenues = _context.Venues.ToList();
-            return View(AllVenues);
+            if (id == null)
+                return NotFound();
+
+            var venue = await _context.Venues
+                .Include(v => v.Bookings)
+                .FirstOrDefaultAsync(v => v.venueId == id);
+
+            if (venue == null)
+                return NotFound();
+
+            return View(venue);
         }
 
-        [HttpGet]
-        public IActionResult Venue()
+        // GET: Venue/Create
+        public IActionResult Create()
         {
             return View();
         }
 
+        // POST: Venue/Create
         [HttpPost]
-        public IActionResult CreateVenue(VenueModel model)
-        {
-
-
-          //  if (ModelState.IsValid)
-            //{
-                _context.Venues.Add(model);
-
-                _context.SaveChanges();
-                //return RedirectToAction(nameof(Index));
-                return View(model);
-           // }
-
-
-            //return RedirectToAction("Success");
-         //   return RedirectToAction("Venueview");
-
-        }
-        [HttpGet]
-        public IActionResult VenueDetails(int? VenueId)
-        {
-            if (VenueId != null)
-            {
-                var venueInDb = _context.Venues
-                    .SingleOrDefault(v => v.venueId == VenueId);
-
-                return View(venueInDb);
-            }
-
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> AddVenueImage(VenueModel venue)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(
+            [Bind("venueId,venueName,venueLocation,venueCapacity,venueImage")] VenueModel venue)
         {
             if (ModelState.IsValid)
             {
-                if (venue.venueImage != null)
-                {
-                    string folder = "images/venues/";
-                    folder += Guid.NewGuid().ToString() + "_"
-                        + venue.venueImage.FileName;
+                _context.Venues.Add(venue);
+                await _context.SaveChangesAsync();
 
-                    string serverFolder = Path.Combine(
-                        _webHostEnvironment.WebRootPath,
-                        folder);
-
-                    await venue.venueImage.CopyToAsync(
-                        new FileStream(serverFolder, FileMode.Create));
-                }
-
-                return RedirectToAction("Booking", "Home");
+                return RedirectToAction(nameof(Index));
             }
 
-            return View("_VenueForm");
+            return View(venue);
+        }
+
+        // GET: Venue/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var venue = await _context.Venues.FindAsync(id);
+
+            if (venue == null)
+                return NotFound();
+
+            return View(venue);
+        }
+
+        // POST: Venue/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(
+            int id,
+            [Bind("venueId,venueName,venueLocation,venueCapacity,venueImage")] VenueModel venue)
+        {
+            if (id != venue.venueId)
+                return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Venues.Update(venue);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!VenueExists(venue.venueId))
+                        return NotFound();
+
+                    throw;
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(venue);
+        }
+
+        // GET: Venue/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var venue = await _context.Venues
+                .FirstOrDefaultAsync(v => v.venueId == id);
+
+            if (venue == null)
+                return NotFound();
+
+            return View(venue);
+        }
+
+        // POST: Venue/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var venue = await _context.Venues.FindAsync(id);
+
+            if (venue != null)
+            {
+                _context.Venues.Remove(venue);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool VenueExists(int id)
+        {
+            return _context.Venues.Any(v => v.venueId == id);
         }
     }
 }
