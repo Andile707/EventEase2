@@ -57,8 +57,22 @@ namespace Eventease.Controllers
         {
             if (ModelState.IsValid)
             {
+                bool bookingExists = await _context.Bookings.AnyAsync(b =>
+                    b.VenueId == booking.VenueId &&
+                    b.BookingDate == booking.BookingDate);
+
+                if (bookingExists)
+                {
+                    ModelState.AddModelError("",
+                        "This venue is already booked on the selected date.");
+
+                    PopulateDropdowns(booking.VenueId, booking.EventId);
+                    return View(booking);
+                }
+
                 _context.Bookings.Add(booking);
                 await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -95,6 +109,19 @@ namespace Eventease.Controllers
             {
                 try
                 {
+                    bool bookingExists = await _context.Bookings.AnyAsync(b =>
+                     b.VenueId == booking.VenueId &&
+                     b.BookingDate == booking.BookingDate &&
+                     b.BookingId != booking.BookingId);
+
+                    if (bookingExists)
+                    {
+                        ModelState.AddModelError("",
+                            "This venue is already booked on the selected date.");
+
+                        PopulateDropdowns(booking.VenueId, booking.EventId);
+                        return View(booking);
+                    }
                     _context.Bookings.Update(booking);
                     await _context.SaveChangesAsync();
                 }

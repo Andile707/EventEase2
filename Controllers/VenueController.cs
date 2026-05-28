@@ -126,6 +126,17 @@ namespace Eventease.Controllers
         {
             var venue = await _context.Venues.FindAsync(id);
 
+            bool hasBookings = await _context.Bookings
+                .AnyAsync(b => b.VenueId == id);
+
+            if (hasBookings)
+            {
+                TempData["ErrorMessage"] =
+                    "This venue cannot be deleted because it has active bookings.";
+
+                return RedirectToAction(nameof(Index));
+            }
+
             if (venue != null)
             {
                 _context.Venues.Remove(venue);
