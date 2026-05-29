@@ -74,6 +74,7 @@ DisplayBookingsView(string searchTerm, DateOnly? bookingDate)
             if (!string.IsNullOrEmpty(searchTerm))
             {
                 query = query.Where(b =>
+                    b.BookingId.ToString().Contains(searchTerm) ||
                     b.Event.EventName.Contains(searchTerm) ||
                     b.Venue.venueName.Contains(searchTerm));
             }
