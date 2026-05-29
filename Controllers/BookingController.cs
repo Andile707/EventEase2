@@ -25,6 +25,35 @@ namespace Eventease.Controllers
             return View(await bookings.ToListAsync());
         }
 
+        // GET: Booking/DisplayBookingsView
+        public async Task<IActionResult> DisplayBookingsView(string searchTerm, DateOnly? bookingDate)
+        {
+            var bookings = _context.Bookings
+                .Include(b => b.Event)
+                .Include(b => b.Venue)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                bookings = bookings.Where(b =>
+                    b.BookingId.ToString().Contains(searchTerm) ||
+                    b.BookingName.Contains(searchTerm) ||
+                    b.Event.EventName.Contains(searchTerm) ||
+                    b.Venue.venueName.Contains(searchTerm));
+            }
+
+            if (bookingDate.HasValue)
+            {
+                bookings = bookings.Where(b =>
+                    b.BookingDate == bookingDate.Value);
+            }
+
+            ViewBag.SearchTerm = searchTerm;
+            ViewBag.BookingDate = bookingDate?.ToString("yyyy-MM-dd");
+
+            return View(await bookings.ToListAsync());
+        }
+
         // GET: Booking/Details/5
         public async Task<IActionResult> Details(int? id)
         {

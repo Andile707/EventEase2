@@ -1,17 +1,11 @@
 ﻿@model IEnumerable<BookingDisplayViewModel>
 
 <form asp-action="DisplayBookingsView" method="get">
+    <input type="text" name="searchTerm" placeholder="Search bookings..." value="@ViewBag.SearchTerm" />
 
-    <input type="text"
-           name="searchTerm"
-           placeholder="Search bookings..." />
+    <input type="date" name="bookingDate" value="@ViewBag.BookingDate" />
 
-    <input type="date" name="bookingDate" />
-
-    <button type="submit">
-        Search
-    </button>
-
+    <button type="submit">Search</button>
 </form>
 
 <table class="table">
