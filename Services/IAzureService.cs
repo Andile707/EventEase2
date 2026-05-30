@@ -2,6 +2,6 @@
 {
     public interface IAzureService
     {
-        void UploadFiles(IFormFile file);
+        Task<string> UploadFiles(IFormFile file);
     }
 }

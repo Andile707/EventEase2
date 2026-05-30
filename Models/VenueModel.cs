@@ -7,13 +7,18 @@ namespace Eventease.Models
     {
         [Key]
         public int venueId { get; set; } = 0;
+
         public string venueName { get; set; } = "";
+
         public string? venueLocation { get; set; }
+
         public int venueCapacity { get; set; }
+
+        public string? venueImage { get; set; } // saved Azure Blob URL
 
         [Display(Name = "Select Venue Image")]
         [NotMapped]
-        public IFormFile venueImage { get; set; } = null!;
+        public IFormFile? venueImageFile { get; set; } // uploaded file only
 
         public ICollection<BookingModel>? Bookings { get; set; }
     }

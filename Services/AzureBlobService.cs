@@ -62,14 +62,12 @@ namespace Eventease.Services
          }*/
 
 
-        public void UploadFiles(IFormFile file)
+        public async Task<string> UploadFiles(IFormFile file)
         {
             using MemoryStream fileUploadStream = new MemoryStream();
 
-             file.CopyToAsync(fileUploadStream);
-
+            await file.CopyToAsync(fileUploadStream);
             fileUploadStream.Position = 0;
-           // _logger.LogInformation("Upload started");
 
             BlobContainerClient blobContainerClient =
                 new BlobContainerClient(
@@ -81,13 +79,18 @@ namespace Eventease.Services
             string safeFileName = string.Concat(
                 originalName.Split(Path.GetInvalidFileNameChars()));
 
-            string uniqueName =
-                $"{Guid.NewGuid()}_{safeFileName}";
+            string uniqueName = $"{Guid.NewGuid()}_{safeFileName}";
 
-            BlobClient blobClient =
-                blobContainerClient.GetBlobClient(uniqueName);
+            BlobClient blobClient = blobContainerClient.GetBlobClient(uniqueName);
 
-             blobClient.Upload(fileUploadStream);
+            await blobClient.UploadAsync(
+             fileUploadStream,
+                new BlobHttpHeaders
+            {
+             ContentType = file.ContentType
+            });
+
+            return blobClient.Uri.ToString();
         }
 
         public async Task<List<BlobItem>> GetUploadedBlob()

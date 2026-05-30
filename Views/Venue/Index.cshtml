@@ -13,6 +13,7 @@
 <table class="table table-bordered table-striped">
     <thead>
         <tr>
+            <th>Image</th>
             <th>Venue Name</th>
             <th>Location</th>
             <th>Capacity</th>
@@ -23,6 +24,14 @@
         @foreach (var item in Model)
         {
             <tr>
+                <td>
+                    <p>@item.venueImage</p>
+
+                    <img src="@item.venueImage"
+                        width="150"
+                         height="100"
+                        style="object-fit:cover;" />
+                </td>
                 <td>@item.venueName</td>
                 <td>@item.venueLocation</td>
                 <td>@item.venueCapacity</td>

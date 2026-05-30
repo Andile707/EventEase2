@@ -1,5 +1,6 @@
 ﻿using Eventease.Data;
 using Eventease.Models;
+using Eventease.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,10 +9,12 @@ namespace Eventease.Controllers
     public class VenueController : Controller
     {
         private readonly EventEaseDbContext _context;
+        private readonly IAzureService _azureService;
 
-        public VenueController(EventEaseDbContext context)
+        public VenueController(EventEaseDbContext context, IAzureService azureService)
         {
             _context = context;
+            _azureService = azureService;
         }
 
         // GET: Venue
@@ -45,9 +48,15 @@ namespace Eventease.Controllers
         // POST: Venue/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("venueId,venueName,venueLocation,venueCapacity,venueImage")] VenueModel venue)
+         public async Task<IActionResult> Create(VenueModel venue)
         {
+            if (venue.venueImageFile != null && venue.venueImageFile.Length > 0)
+            {
+                venue.venueImage = await _azureService.UploadFiles(venue.venueImageFile);
+            }
+
+            ModelState.Remove("venueImage");
+
             if (ModelState.IsValid)
             {
                 _context.Venues.Add(venue);
@@ -76,27 +85,31 @@ namespace Eventease.Controllers
         // POST: Venue/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(
-            int id,
-            [Bind("venueId,venueName,venueLocation,venueCapacity,venueImage")] VenueModel venue)
+        public async Task<IActionResult> Edit(int id, VenueModel venue)
         {
             if (id != venue.venueId)
                 return NotFound();
 
+            ModelState.Remove("venueImage");
+
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Venues.Update(venue);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!VenueExists(venue.venueId))
-                        return NotFound();
+                var existingVenue = await _context.Venues.FindAsync(id);
 
-                    throw;
+                if (existingVenue == null)
+                    return NotFound();
+
+                existingVenue.venueName = venue.venueName;
+                existingVenue.venueLocation = venue.venueLocation;
+                existingVenue.venueCapacity = venue.venueCapacity;
+
+                if (venue.venueImageFile != null && venue.venueImageFile.Length > 0)
+                {
+                    existingVenue.venueImage =
+                        await _azureService.UploadFiles(venue.venueImageFile);
                 }
+
+                await _context.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
