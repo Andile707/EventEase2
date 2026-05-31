@@ -63,8 +63,9 @@ namespace Eventease.Controllers
            //return View("DisplayBookingsView");
         }
 
-        public async Task<IActionResult>
-DisplayBookingsView(string searchTerm, DateOnly? bookingDate)
+public async Task<IActionResult> DisplayBookingsView(
+    string searchTerm,
+    DateOnly? bookingDate)
         {
             var query = _context.Bookings
                 .Include(b => b.Event)
@@ -94,6 +95,9 @@ DisplayBookingsView(string searchTerm, DateOnly? bookingDate)
                     BookingDate = b.BookingDate
                 })
                 .ToListAsync();
+
+            ViewBag.SearchTerm = searchTerm;
+            ViewBag.BookingDate = bookingDate?.ToString("yyyy-MM-dd");
 
             return View(bookings);
         }
